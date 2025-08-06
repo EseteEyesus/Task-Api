@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { comparePassword } from "@/utils/hash";
 import { signToken } from "@/utils/jwt";
 

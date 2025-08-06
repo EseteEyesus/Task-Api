@@ -1,43 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { getUserFromRequest } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const userId = await getUserFromRequest(request);
-  if (!userId)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+/** Update a task by ID */
+export async function PUT(request: NextRequest, context: any) {
+  const id = parseInt(context?.params?.id);
+  if (isNaN(id)) {
+    return NextResponse.json({ error: "Invalid task ID" }, { status: 400 });
+  }
 
   const body = await request.json();
-  const { title, description, status, categoryId } = body;
 
-  const data: Record<string, any> = {};
-  if (title !== undefined) data.title = title;
-  if (description !== undefined) data.description = description;
-  if (status !== undefined) data.status = status;
-  if (categoryId !== undefined) data.categoryId = categoryId;
+  try {
+    const updated = await prisma.task.update({
+      where: { id },
+      data: body,
+    });
 
-  const updated = await prisma.task.updateMany({
-    where: { id: Number(context.params.id), userId },
-    data,
-  });
-
-  return NextResponse.json({ updated });
+    return NextResponse.json(updated);
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : "Unknown error";
+    console.error("Update error:", detail);
+    return NextResponse.json(
+      { error: "Failed to update task", detail },
+      { status: 500 }
+    );
+  }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const userId = await getUserFromRequest(request);
-  if (!userId)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+/** Delete a task by ID */
+export async function DELETE(request: NextRequest, context: any) {
+  const id = parseInt(context?.params?.id);
+  if (isNaN(id)) {
+    return NextResponse.json({ error: "Invalid task ID" }, { status: 400 });
+  }
 
-  const deleted = await prisma.task.deleteMany({
-    where: { id: Number(context.params.id), userId },
-  });
-
-  return NextResponse.json({ deleted });
+  try {
+    await prisma.task.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : "Unknown error";
+    console.error("Delete error:", detail);
+    return NextResponse.json(
+      { error: "Failed to delete task", detail },
+      { status: 500 }
+    );
+  }
 }
