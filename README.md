@@ -15,14 +15,15 @@ A fully backend task management API built with **Next.js API routes**, **TypeScr
 
 ## 🧰 Tech Stack
 
-| Layer        | Technology         |
-|--------------|--------------------|
-| Backend      | Next.js API Routes |
-| Language     | TypeScript         |
-| Database     | PostgreSQL + Prisma |
-| Deployment   | Vercel              |
+| Layer      | Technology          |
+| ---------- | ------------------- |
+| Backend    | Next.js API Routes  |
+| Language   | TypeScript          |
+| Database   | PostgreSQL + Prisma |
+| Deployment | Vercel              |
 
 ---
+
 ## 📂 Project Structure
 
 app/ ├── api/ │ ├── tasks/ # Task CRUD routes │ └── categories/ # Category CRUD routes prisma/ ├── schema.prisma # DB schema lib/ ├── prisma.ts # Prisma client
@@ -60,3 +61,4 @@ npx prisma migrate dev --name init
 
 ## 📂 Project Structure
 
+```
