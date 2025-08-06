@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/auth";
-import { createTaskSchema } from "@/lib/validators/task";
+
 
 export async function GET(request: Request) {
   const userId = await getUserFromRequest(request);
@@ -39,20 +39,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
-  const result = createTaskSchema.safeParse(body);
+  const { title, description, categoryId, status } = body;
 
-  if (!result.success) {
-    return NextResponse.json({ error: result.error.format() }, { status: 400 });
+  if (!title || !categoryId) {
+    return NextResponse.json(
+      { error: "Missing title or category" },
+      { status: 400 }
+    );
   }
-
-  const { title, description, categoryId, status } = result.data;
 
   const task = await prisma.task.create({
     data: {
       title,
       description,
       categoryId,
-      status: status || "pending", // ✅ still defaults if not provided
+      status: status || "pending", // ✅ default to "pending" if not provided
       userId,
     },
   });
