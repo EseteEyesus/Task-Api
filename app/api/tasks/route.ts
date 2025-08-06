@@ -48,15 +48,37 @@ export async function POST(request: Request) {
     );
   }
 
-  const task = await prisma.task.create({
-    data: {
-      title,
-      description,
-      categoryId,
-      status: status || "pending", // ✅ default to "pending" if not provided
-      userId,
-    },
+  // 🛡️ Validate that the category exists
+  const categoryExists = await prisma.category.findUnique({
+    where: { id: categoryId },
   });
 
-  return NextResponse.json({ task }, { status: 201 });
+  if (!categoryExists) {
+    return NextResponse.json(
+      { error: "Invalid category — does not exist" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const task = await prisma.task.create({
+      data: {
+        title,
+        description,
+        categoryId,
+        status: status || "pending",
+        userId,
+      },
+    });
+
+    return NextResponse.json({ task }, { status: 201 });
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : "Unknown error";
+    console.error("Task creation error:", detail);
+
+    return NextResponse.json(
+      { error: "Failed to create task", detail },
+      { status: 500 }
+    );
+  }
 }

@@ -3,7 +3,9 @@ import { prisma } from "@/lib/prisma";
 
 /** Update a task by ID */
 export async function PUT(request: NextRequest, context: any) {
-  const id = parseInt(context?.params?.id);
+  const { params } = await context;
+  const id = parseInt(params?.id);
+
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid task ID" }, { status: 400 });
   }
@@ -11,9 +13,15 @@ export async function PUT(request: NextRequest, context: any) {
   const body = await request.json();
 
   try {
+    // Optional: Check if task exists before update
+    const existing = await prisma.task.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+
     const updated = await prisma.task.update({
       where: { id },
-      data: body,
+      data: body, // ensure client sends valid structure
     });
 
     return NextResponse.json(updated);
@@ -29,13 +37,21 @@ export async function PUT(request: NextRequest, context: any) {
 
 /** Delete a task by ID */
 export async function DELETE(request: NextRequest, context: any) {
-  const id = parseInt(context?.params?.id);
+  const { params } = await context;
+  const id = parseInt(params?.id);
+
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid task ID" }, { status: 400 });
   }
 
   try {
+    const existing = await prisma.task.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Task not found" }, { status: 404 });
+    }
+
     await prisma.task.delete({ where: { id } });
+
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const detail = error instanceof Error ? error.message : "Unknown error";
