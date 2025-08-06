@@ -1,11 +1,11 @@
 import { NextRequest } from "next/server";
-import  prisma  from "../../../../lib/prisma"; // Adjust path if needed
+import  prisma  from "../../../../lib/prisma";
 
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const id = parseInt(context.params.id);
+  const id = parseInt(params.id);
 
   if (isNaN(id)) {
     return new Response("Invalid ID format", { status: 400 });
