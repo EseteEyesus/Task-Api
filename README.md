@@ -1,6 +1,6 @@
 # 🛠️ Todo Manager Backend
 
-A fully backend task management API built with **Next.js API routes**, **TypeScript**, and **Prisma ORM**. Designed for modular CRUD operations, dynamic filtering, and scalable architecture — ideal for productivity tools and future service integrations.
+A fully backend task management or Todo API built with **Next.js API routes**, **TypeScript**, and **Prisma ORM**. Designed for modular CRUD operations, dynamic filtering, and scalable architecture — ideal for productivity tools and future service integrations.
 
 ---
 
